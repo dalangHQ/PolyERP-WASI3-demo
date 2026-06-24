@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "demo:poly-erp/inventory@1.0.0": "inventory.wasm",
+    "demo:poly-erp/fraud-detection@1.0.0": "fraud.wasm"
+  }
+}

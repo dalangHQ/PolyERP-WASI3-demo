@@ -64,9 +64,11 @@ world fraud-service {
     export fraud-detection;
 }
 
-// Gateway world - imports sync interfaces, exports gateway-api
+// Gateway world - imports sync interfaces, exports gateway-api + wasi:cli/run
+// The wasi:cli/run export makes this a runnable command that `wasmtime run` can execute.
 world gateway-service {
     import inventory;
     import fraud-detection;
     export gateway-api;
+    export wasi:cli/run@0.2.3;
 }

@@ -1,0 +1,18 @@
+// PolyERP WASI 0.3 Composition
+// 
+// Plugs the Rust Inventory and Python Fraud Detection components
+// into the TypeScript Gateway orchestrator.
+// The gateway's wasi:cli/run export is preserved through composition.
+
+package demo:poly-erp-composition@1.0.0;
+
+// Instantiate each component
+let inv = new demo:poly-erp:inventory-service@1.0.0 {};
+let frd = new demo:poly-erp:fraud-service@1.0.0 {};
+let gtw = new demo:poly-erp:gateway-service@1.0.0 {
+    inventory: inv.inventory,
+    fraud-detection: frd.fraud-detection,
+};
+
+// Export the gateway-api interface for programmatic access
+export gtw.gateway-api as gateway-api;
