@@ -1,0 +1,11 @@
+/home/z/my-project/PolyERP-WASI3-demo/rust-inventory/target/wasm32-wasip2/release/deps/wasip2-4c25351420a7d3d6.d: /home/z/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/wasip2-1.0.3+wasi-0.2.9/src/lib.rs /home/z/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/wasip2-1.0.3+wasi-0.2.9/src/ext/mod.rs /home/z/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/wasip2-1.0.3+wasi-0.2.9/src/command.rs /home/z/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/wasip2-1.0.3+wasi-0.2.9/src/imports.rs /home/z/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/wasip2-1.0.3+wasi-0.2.9/src/proxy.rs
+
+/home/z/my-project/PolyERP-WASI3-demo/rust-inventory/target/wasm32-wasip2/release/deps/libwasip2-4c25351420a7d3d6.rlib: /home/z/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/wasip2-1.0.3+wasi-0.2.9/src/lib.rs /home/z/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/wasip2-1.0.3+wasi-0.2.9/src/ext/mod.rs /home/z/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/wasip2-1.0.3+wasi-0.2.9/src/command.rs /home/z/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/wasip2-1.0.3+wasi-0.2.9/src/imports.rs /home/z/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/wasip2-1.0.3+wasi-0.2.9/src/proxy.rs
+
+/home/z/my-project/PolyERP-WASI3-demo/rust-inventory/target/wasm32-wasip2/release/deps/libwasip2-4c25351420a7d3d6.rmeta: /home/z/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/wasip2-1.0.3+wasi-0.2.9/src/lib.rs /home/z/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/wasip2-1.0.3+wasi-0.2.9/src/ext/mod.rs /home/z/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/wasip2-1.0.3+wasi-0.2.9/src/command.rs /home/z/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/wasip2-1.0.3+wasi-0.2.9/src/imports.rs /home/z/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/wasip2-1.0.3+wasi-0.2.9/src/proxy.rs
+
+/home/z/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/wasip2-1.0.3+wasi-0.2.9/src/lib.rs:
+/home/z/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/wasip2-1.0.3+wasi-0.2.9/src/ext/mod.rs:
+/home/z/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/wasip2-1.0.3+wasi-0.2.9/src/command.rs:
+/home/z/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/wasip2-1.0.3+wasi-0.2.9/src/imports.rs:
+/home/z/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/wasip2-1.0.3+wasi-0.2.9/src/proxy.rs:

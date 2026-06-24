@@ -1,0 +1,81 @@
+package demo:poly-erp@1.0.0;
+
+// 1. Core Data Types
+interface types {
+    record order {
+        id: string,
+        item-id: string,
+        quantity: u32,
+        user-id: string,
+    }
+
+    record inventory-update {
+        item-id: string,
+        new-stock: u32,
+    }
+    
+    // Telemetry payload for our frontend observability dashboard
+    record telemetry {
+        architecture: string,
+        throughput-msg-sec: u32,
+        latency-ns: u64,
+        timestamp: u64,
+    }
+
+    record fraud-result {
+        order-id: string,
+        is-fraud: bool,
+    }
+}
+
+// 2. The Rust Interface - Process a batch of orders and return updates
+interface inventory {
+    use types.{order, inventory-update};
+    
+    // Process a batch of orders, returns inventory updates
+    process-orders: func(orders: list<order>) -> list<inventory-update>;
+    
+    // Get current stock levels
+    get-stock: func(item-ids: list<string>) -> list<u32>;
+}
+
+// 3. The Python Interface - Check individual orders for fraud
+interface fraud-detection {
+    use types.{order, fraud-result};
+    
+    // Evaluate orders for fraud patterns, returns results
+    check-fraud: func(orders: list<order>) -> list<fraud-result>;
+}
+
+// 4. Gateway interface - The orchestrator's exported API
+interface gateway-api {
+    use types.{telemetry, order, inventory-update, fraud-result};
+
+    // Process orders through the full pipeline: fraud check -> inventory update
+    process-pipeline: func(orders: list<order>) -> list<inventory-update>;
+    
+    // Get current telemetry benchmarks
+    get-telemetry: func() -> list<telemetry>;
+    
+    // Get current stock levels
+    get-stock: func(item-ids: list<string>) -> list<u32>;
+}
+
+// 5. Component Worlds (Targets for Compilation)
+
+// Target for `cargo-component`
+world inventory-service {
+    export inventory;
+}
+
+// Target for `componentize-py`
+world fraud-service {
+    export fraud-detection;
+}
+
+// Target for `jco` (The Orchestrator)
+world gateway-service {
+    import inventory;
+    import fraud-detection;
+    export gateway-api;
+}
