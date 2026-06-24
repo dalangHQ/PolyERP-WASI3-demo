@@ -1,1 +1,0 @@
-{"rustc":18157579986749665813,"features":"","declared_features":"","target":0,"profile":0,"path":0,"deps":[[3778966308548958430,"build_script_build",false,9685325169102440249]],"local":[{"RerunIfChanged":{"output":"wasm32-wasip1/release/build/std-b9a30769992b7c12/output","paths":["build.rs"]}}],"rustflags":[],"config":0,"compile_kind":0}

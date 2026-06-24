@@ -1,2 +1,0 @@
-cargo:rustc-link-lib=static=wit_bindgen_cabi0_57_1
-cargo:rustc-link-search=native=/home/z/my-project/PolyERP-WASI3-demo/rust-inventory/target/wasm32-wasip2/release/build/wit-bindgen-9c3900fb6d97bfd9/out

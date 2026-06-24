@@ -1,1 +1,0 @@
-/home/z/my-project/PolyERP-WASI3-demo/rust-inventory/target/wasm32-wasip2/release/rust_inventory.wasm: /home/z/my-project/PolyERP-WASI3-demo/rust-inventory/src/bindings.rs /home/z/my-project/PolyERP-WASI3-demo/rust-inventory/src/lib.rs
