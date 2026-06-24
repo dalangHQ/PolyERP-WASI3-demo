@@ -1,0 +1,14 @@
+{
+  "name": "ts-gateway",
+  "version": "0.1.0",
+  "description": "PolyERP TypeScript Gateway - Orchestrator component",
+  "scripts": {
+    "build:ts": "tsc",
+    "componentize": "jco componentize dist/index.js -w ../wit -n gateway-service -o gateway.wasm",
+    "build": "npm run build:ts && npm run componentize"
+  },
+  "devDependencies": {
+    "@bytecodealliance/jco": "^1.24.3",
+    "typescript": "^5.7.0"
+  }
+}
