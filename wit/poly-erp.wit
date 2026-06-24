@@ -14,51 +14,59 @@ interface types {
         new-stock: u32,
     }
     
-    // Telemetry payload for our frontend observability dashboard
     record telemetry {
         architecture: string,
         throughput-msg-sec: u32,
         latency-ns: u64,
         timestamp: u64,
     }
+
+    record fraud-result {
+        order-id: string,
+        is-fraud: bool,
+    }
 }
 
-// 2. The Rust Interface - Infinite stream processing
+// 2. Inventory interface (sync batch - used by gateway for composition)
 interface inventory {
     use types.{order, inventory-update};
-    
-    // Takes an endless stream of orders, returns an endless stream of stock updates
-    process-orders: async func(incoming: stream<order>) -> stream<inventory-update>;
+    process-orders-batch: func(orders: list<order>) -> list<inventory-update>;
+    get-stock: func(item-ids: list<string>) -> list<u32>;
 }
 
-// 3. The Python Interface - Async fraud evaluation
+// 3. Fraud detection (sync batch - used by gateway for composition)
 interface fraud-detection {
-    use types.{order};
-    
-    // Evaluates a single order and asynchronously returns a boolean future
-    check-fraud: async func(txn: order) -> future<bool>;
+    use types.{order, fraud-result};
+    check-fraud-batch: func(orders: list<order>) -> list<fraud-result>;
 }
 
-// 4. Component Worlds (Targets for Compilation)
+// 4. Gateway interface
+interface gateway-api {
+    use types.{telemetry, order, inventory-update, fraud-result};
+    process-pipeline: func(orders: list<order>) -> list<inventory-update>;
+    get-telemetry: func() -> list<telemetry>;
+    get-stock: func(item-ids: list<string>) -> list<u32>;
+}
 
-// Target for Rust inventory component
+// === Async interfaces (standalone WASI 0.3 components) ===
+// These are defined separately for components that can use stream<T>/future<T> natively.
+// See wit/async-interfaces.wit for the full async WIT definitions.
+
+// 5. Component Worlds
+
+// Rust world - exports inventory (sync) for composition
 world inventory-service {
     export inventory;
 }
 
-// Target for Python fraud component
+// Python world - exports fraud-detection (sync) for composition
 world fraud-service {
     export fraud-detection;
 }
 
-// Target for TypeScript Gateway (The Orchestrator)
+// Gateway world - imports sync interfaces, exports gateway-api
 world gateway-service {
     import inventory;
     import fraud-detection;
-    
-    use types.{telemetry, order};
-
-    // The Gateway provides an interface for the frontend to connect to
-    export start-telemetry-stream: async func() -> stream<telemetry>;
-    export ingest-frontend-orders: async func(incoming: stream<order>);
+    export gateway-api;
 }

@@ -9,9 +9,6 @@ declare module 'demo:poly-erp/types@1.0.0' {
     itemId: string,
     newStock: number,
   }
-  /**
-   * Telemetry payload for our frontend observability dashboard
-   */
   export interface Telemetry {
     architecture: string,
     throughputMsgSec: number,
