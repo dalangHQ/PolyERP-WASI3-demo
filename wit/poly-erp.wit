@@ -21,61 +21,44 @@ interface types {
         latency-ns: u64,
         timestamp: u64,
     }
-
-    record fraud-result {
-        order-id: string,
-        is-fraud: bool,
-    }
 }
 
-// 2. The Rust Interface - Process a batch of orders and return updates
+// 2. The Rust Interface - Infinite stream processing
 interface inventory {
     use types.{order, inventory-update};
     
-    // Process a batch of orders, returns inventory updates
-    process-orders: func(orders: list<order>) -> list<inventory-update>;
-    
-    // Get current stock levels
-    get-stock: func(item-ids: list<string>) -> list<u32>;
+    // Takes an endless stream of orders, returns an endless stream of stock updates
+    process-orders: async func(incoming: stream<order>) -> stream<inventory-update>;
 }
 
-// 3. The Python Interface - Check individual orders for fraud
+// 3. The Python Interface - Async fraud evaluation
 interface fraud-detection {
-    use types.{order, fraud-result};
+    use types.{order};
     
-    // Evaluate orders for fraud patterns, returns results
-    check-fraud: func(orders: list<order>) -> list<fraud-result>;
+    // Evaluates a single order and asynchronously returns a boolean future
+    check-fraud: async func(txn: order) -> future<bool>;
 }
 
-// 4. Gateway interface - The orchestrator's exported API
-interface gateway-api {
-    use types.{telemetry, order, inventory-update, fraud-result};
+// 4. Component Worlds (Targets for Compilation)
 
-    // Process orders through the full pipeline: fraud check -> inventory update
-    process-pipeline: func(orders: list<order>) -> list<inventory-update>;
-    
-    // Get current telemetry benchmarks
-    get-telemetry: func() -> list<telemetry>;
-    
-    // Get current stock levels
-    get-stock: func(item-ids: list<string>) -> list<u32>;
-}
-
-// 5. Component Worlds (Targets for Compilation)
-
-// Target for `cargo-component`
+// Target for Rust inventory component
 world inventory-service {
     export inventory;
 }
 
-// Target for `componentize-py`
+// Target for Python fraud component
 world fraud-service {
     export fraud-detection;
 }
 
-// Target for `jco` (The Orchestrator)
+// Target for TypeScript Gateway (The Orchestrator)
 world gateway-service {
     import inventory;
     import fraud-detection;
-    export gateway-api;
+    
+    use types.{telemetry, order};
+
+    // The Gateway provides an interface for the frontend to connect to
+    export start-telemetry-stream: async func() -> stream<telemetry>;
+    export ingest-frontend-orders: async func(incoming: stream<order>);
 }
