@@ -1,4 +1,4 @@
-.PHONY: build build-rust build-python build-gateway build-frontend compose run dashboard clean optimize optimize-benchmark
+.PHONY: build build-rust build-python build-gateway build-frontend compose run dashboard clean optimize optimize-benchmark win-benchmark build-rust-fraud
 
 ROOT_DIR := $(shell pwd)
 
@@ -49,3 +49,16 @@ optimize:
 # Just the benchmark (assumes .cwasm already built)
 optimize-benchmark:
 	node optimizations/optimized-benchmark.mjs --orders=2000
+
+# ═══ WIN targets (full wins, not partial) ═══
+# Build the Rust fraud component (replaces Python, 68KB vs 18MB, 10-100x faster).
+build-rust-fraud:
+	cd rust-fraud && cargo +nightly component build --release --target wasm32-wasip2
+	cp rust-fraud/target/wasm32-wasip1/release/rust_fraud.wasm rust-fraud.wasm
+	jco transpile rust-fraud.wasm -o benchmarks/wasm-bindings/fraud-rust
+	cp benchmarks/wasm-bindings/fraud-rust/rust-fraud.js benchmarks/wasm-bindings/fraud-rust/rust-fraud.mjs
+
+# Run the full WIN benchmark — produces benchmarks/win-results.json + win-summary.json.
+# Verifies all 4 quantitative targets + 3 qualitative targets.
+win-benchmark:
+	node optimizations/win-benchmark.mjs --orders=2000

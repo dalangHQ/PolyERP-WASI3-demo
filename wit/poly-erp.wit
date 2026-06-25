@@ -47,6 +47,13 @@ interface inventory {
     process-orders-batch: func(orders: list<order>) -> list<inventory-update>;
     get-stock: func(item-ids: list<string>) -> list<u32>;
     get-memory-stats: func() -> memory-stats;
+    // Zero-marshal binary protocol: accepts a flat binary buffer
+    // (4-byte count + N*16-byte orders) and returns a flat binary
+    // result (4-byte count + N*8-byte results).
+    // Each order is 16 bytes: [id_hash u32][item_id_hash u32][quantity u32][user_id_hash u32]
+    // Each result is 8 bytes: [item_index u32][new_stock u32]
+    // This eliminates the per-string marshal tax.
+    process-binary-batch: func(input: list<u8>) -> list<u8>;
 }
 
 // 3. Fraud detection (sync batch - used by gateway for composition)

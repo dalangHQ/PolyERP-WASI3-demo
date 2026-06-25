@@ -81,17 +81,18 @@ function encodeOrders(orders) {
 
 /**
  * Decode a binary results buffer.
- * @param {Buffer} buf
+ * @param {Buffer|Uint8Array} buf
  * @returns {Array<{itemIndex:number, newStock:number}>}
  */
 function decodeResults(buf) {
-  const count = buf.readUInt32LE(0);
+  const view = new DataView(buf.buffer, buf.byteOffset, buf.byteLength);
+  const count = view.getUint32(0, true);
   const results = new Array(count);
   let offset = 4;
   for (let i = 0; i < count; i++) {
     results[i] = {
-      itemIndex: buf.readUInt32LE(offset),
-      newStock: buf.readUInt32LE(offset + 4),
+      itemIndex: view.getUint32(offset, true),
+      newStock: view.getUint32(offset + 4, true),
     };
     offset += RESULT_SIZE;
   }
@@ -104,19 +105,20 @@ function decodeResults(buf) {
  * and indexed by SKU position, so we have ZERO map lookups and
  * ZERO string allocations during processing.
  *
- * @param {Buffer} orderBuf
+ * @param {Buffer|Uint8Array} orderBuf
  * @param {Uint32Array} stocks - flat array indexed by SKU position
  * @returns {Buffer} result buffer (4-byte count + N*8 bytes)
  */
 function processBinaryOrders(orderBuf, stocks) {
-  const count = orderBuf.readUInt32LE(0);
+  const view = new DataView(orderBuf.buffer, orderBuf.byteOffset, orderBuf.byteLength);
+  const count = view.getUint32(0, true);
   const result = Buffer.allocUnsafe(4 + count * RESULT_SIZE);
-  result.writeUInt32LE(count, 0);
   let inOffset = 4;
   let outOffset = 4;
+  result.writeUInt32LE(count, 0);
   for (let i = 0; i < count; i++) {
-    const itemIdHash = orderBuf.readUInt32LE(inOffset + 4);
-    const quantity = orderBuf.readUInt32LE(inOffset + 8);
+    const itemIdHash = view.getUint32(inOffset + 4, true);
+    const quantity = view.getUint32(inOffset + 8, true);
     const idx = HASH_TO_INDEX.get(itemIdHash);
     if (idx === undefined) {
       // Unknown SKU — skip but record
@@ -146,15 +148,16 @@ function processBinaryOrders(orderBuf, stocks) {
  * Returns a BitArray (1 bit per order) for ultra-compact transmission.
  */
 function binaryFraudCheck(orderBuf) {
-  const count = orderBuf.readUInt32LE(0);
+  const view = new DataView(orderBuf.buffer, orderBuf.byteOffset, orderBuf.byteLength);
+  const count = view.getUint32(0, true);
   const bitBytes = Math.ceil(count / 8);
   const bits = Buffer.alloc(4 + bitBytes);
   bits.writeUInt32LE(count, 0);
   bits.fill(0, 4);
   let offset = 4;
   for (let i = 0; i < count; i++) {
-    const quantity = orderBuf.readUInt32LE(offset + 8);
-    const userIdHash = orderBuf.readUInt32LE(offset + 12);
+    const quantity = view.getUint32(offset + 8, true);
+    const userIdHash = view.getUint32(offset + 12, true);
     let isFraud = false;
     if (quantity > 500) isFraud = true;
     else if (quantity > 100) {
@@ -181,14 +184,15 @@ function binaryFraudCheck(orderBuf) {
  * Returns a new order buffer containing only non-fraudulent orders.
  */
 function filterOrdersByFraudMask(orderBuf, fraudBits) {
-  const count = orderBuf.readUInt32LE(0);
+  const view = new DataView(orderBuf.buffer, orderBuf.byteOffset, orderBuf.byteLength);
+  const count = view.getUint32(0, true);
   const filtered = [];
   let offset = 4;
   for (let i = 0; i < count; i++) {
     const byteIdx = 4 + (i >> 3);
     const isFraud = (fraudBits[byteIdx] >> (i & 7)) & 1;
     if (!isFraud) {
-      filtered.push(orderBuf.subarray(offset, offset + ORDER_SIZE));
+      filtered.push(Buffer.from(orderBuf.subarray(offset, offset + ORDER_SIZE)));
     }
     offset += ORDER_SIZE;
   }

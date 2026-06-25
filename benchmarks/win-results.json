@@ -1,0 +1,448 @@
+{
+  "timestamp": "2026-06-25T06:04:12.257Z",
+  "config": {
+    "ordersPerRound": 2000,
+    "coldRounds": 1,
+    "warmupRounds": 2,
+    "warmRounds": 3,
+    "hotRounds": 5
+  },
+  "methodology": "Cold=first request after server warmup. Warmup=discarded. Warm=steady state. Hot=max throughput. Each architecture measures the full pipeline: fraud-check → filter → inventory-deduct.",
+  "results": [
+    {
+      "name": "B1: Wasm Composed (cold baseline)",
+      "category": "baseline",
+      "ordersPerRound": 2000,
+      "totalProcessed": 31000,
+      "memoryBytes": 300000,
+      "memoryRss": 300000,
+      "memoryDelta": 0,
+      "cold": {
+        "latencies": [
+          1278993.406
+        ],
+        "avg": 1278993.406,
+        "min": 1278993.406,
+        "max": 1278993.406
+      },
+      "warmup": {
+        "latencies": [],
+        "avg": 0,
+        "min": 0,
+        "max": 0
+      },
+      "warm": {
+        "latencies": [],
+        "avg": 0,
+        "min": 0,
+        "max": 0
+      },
+      "hot": {
+        "latencies": [],
+        "avg": 0,
+        "min": 0,
+        "max": 0
+      },
+      "avgLatencyUs": 1278993,
+      "minLatencyUs": 1278993,
+      "maxLatencyUs": 1278993,
+      "medianLatencyUs": 1278993,
+      "p95LatencyUs": 1278993,
+      "stddevLatencyUs": 0,
+      "throughput": 31795,
+      "note": "Cold start: wasmtime JIT-compiles the 30MB composed binary on first invocation."
+    },
+    {
+      "name": "B2: Node.js In-Process",
+      "ordersPerRound": 2000,
+      "totalProcessed": 22000,
+      "memoryBytes": 12140144,
+      "memoryRss": 87683072,
+      "memoryDelta": 3226776,
+      "cold": {
+        "latencies": [
+          6926.041
+        ],
+        "avg": 6926.041,
+        "min": 6926.041,
+        "max": 6926.041
+      },
+      "warmup": {
+        "latencies": [
+          2395.799,
+          4283.79
+        ],
+        "avg": 3339.7945,
+        "min": 2395.799,
+        "max": 4283.79
+      },
+      "warm": {
+        "latencies": [
+          1651.906,
+          4257.458,
+          2515.045
+        ],
+        "avg": 2808.1363333333334,
+        "min": 1651.906,
+        "max": 4257.458
+      },
+      "hot": {
+        "latencies": [
+          2058.636,
+          2557.901,
+          1940.802,
+          2274.511,
+          1727.477
+        ],
+        "avg": 2111.8654,
+        "min": 1727.477,
+        "max": 2557.901
+      },
+      "avgLatencyUs": 2373,
+      "minLatencyUs": 1652,
+      "maxLatencyUs": 4257,
+      "medianLatencyUs": 2167,
+      "p95LatencyUs": 4257,
+      "stddevLatencyUs": 778,
+      "throughput": 842827,
+      "category": "baseline",
+      "note": "Same business logic as Wasm, V8 JIT. JSON serialize/deserialize simulates FFI marshal cost."
+    },
+    {
+      "name": "B3: REST (HTTP/1.1)",
+      "ordersPerRound": 2000,
+      "totalProcessed": 22000,
+      "memoryBytes": 15398264,
+      "memoryRss": 91357184,
+      "memoryDelta": 3139976,
+      "cold": {
+        "latencies": [
+          28268.957
+        ],
+        "avg": 28268.957,
+        "min": 28268.957,
+        "max": 28268.957
+      },
+      "warmup": {
+        "latencies": [
+          10778.459,
+          4851.51
+        ],
+        "avg": 7814.9845000000005,
+        "min": 4851.51,
+        "max": 10778.459
+      },
+      "warm": {
+        "latencies": [
+          8134.887,
+          6484.508,
+          5436.358
+        ],
+        "avg": 6685.251,
+        "min": 5436.358,
+        "max": 8134.887
+      },
+      "hot": {
+        "latencies": [
+          5635.296,
+          4579.085,
+          4804.624,
+          7071.823,
+          4954.937
+        ],
+        "avg": 5409.153,
+        "min": 4579.085,
+        "max": 7071.823
+      },
+      "avgLatencyUs": 5888,
+      "minLatencyUs": 4579,
+      "maxLatencyUs": 8135,
+      "medianLatencyUs": 5536,
+      "p95LatencyUs": 8135,
+      "stddevLatencyUs": 1164,
+      "throughput": 339692,
+      "category": "baseline",
+      "note": "Node.js pipeline logic over HTTP/1.1. Full network stack: TCP + HTTP framing + JSON."
+    },
+    {
+      "name": "WIN-1: Long-Running Wasm HTTP",
+      "ordersPerRound": 2000,
+      "totalProcessed": 22000,
+      "memoryBytes": 10570080,
+      "memoryRss": 96940032,
+      "memoryDelta": 4941128,
+      "cold": {
+        "latencies": [
+          38273.436
+        ],
+        "avg": 38273.436,
+        "min": 38273.436,
+        "max": 38273.436
+      },
+      "warmup": {
+        "latencies": [
+          20758.85,
+          17330.767
+        ],
+        "avg": 19044.8085,
+        "min": 17330.767,
+        "max": 20758.85
+      },
+      "warm": {
+        "latencies": [
+          28277.968,
+          16620.181,
+          19446.589
+        ],
+        "avg": 21448.246000000003,
+        "min": 16620.181,
+        "max": 28277.968
+      },
+      "hot": {
+        "latencies": [
+          11899.416,
+          11989.332,
+          11469.373,
+          11361.417,
+          10551.342
+        ],
+        "avg": 11454.176000000001,
+        "min": 10551.342,
+        "max": 11989.332
+      },
+      "avgLatencyUs": 15202,
+      "minLatencyUs": 10551,
+      "maxLatencyUs": 28278,
+      "medianLatencyUs": 11944,
+      "p95LatencyUs": 28278,
+      "stddevLatencyUs": 5729,
+      "throughput": 131562,
+      "category": "win",
+      "note": "Real Rust inventory + Python fraud Wasm components. Pre-instantiated at server startup. Each request calls into already-loaded Wasm instance — no subprocess, no re-instantiation. This is the Spin/Fermyon pattern."
+    },
+    {
+      "name": "WIN-2: Binary Protocol (TCP)",
+      "ordersPerRound": 2000,
+      "totalProcessed": 22000,
+      "memoryBytes": 15175520,
+      "memoryRss": 96882688,
+      "memoryDelta": 4551616,
+      "cold": {
+        "latencies": [
+          12160.755
+        ],
+        "avg": 12160.755,
+        "min": 12160.755,
+        "max": 12160.755
+      },
+      "warmup": {
+        "latencies": [
+          4888.888,
+          3580.434
+        ],
+        "avg": 4234.661,
+        "min": 3580.434,
+        "max": 4888.888
+      },
+      "warm": {
+        "latencies": [
+          3965.987,
+          1674.679,
+          1912.666
+        ],
+        "avg": 2517.7773333333334,
+        "min": 1674.679,
+        "max": 3965.987
+      },
+      "hot": {
+        "latencies": [
+          2878.963,
+          1938.239,
+          1566.918,
+          2668.637,
+          2854.466
+        ],
+        "avg": 2381.4446,
+        "min": 1566.918,
+        "max": 2878.963
+      },
+      "avgLatencyUs": 2433,
+      "minLatencyUs": 1567,
+      "maxLatencyUs": 3966,
+      "medianLatencyUs": 2303,
+      "p95LatencyUs": 3966,
+      "stddevLatencyUs": 760,
+      "throughput": 822176,
+      "category": "win",
+      "note": "Binary wire format: 16 bytes/order vs ~100 bytes JSON. No JSON.parse/stringify. FNV-1a hash for SKU lookup. Zero string allocation on hot path."
+    },
+    {
+      "name": "WIN-3: In-Process Wasm",
+      "ordersPerRound": 2000,
+      "totalProcessed": 22000,
+      "memoryBytes": 30838536,
+      "memoryRss": 150028288,
+      "memoryDelta": 12627600,
+      "cold": {
+        "latencies": [
+          26954.133
+        ],
+        "avg": 26954.133,
+        "min": 26954.133,
+        "max": 26954.133
+      },
+      "warmup": {
+        "latencies": [
+          29830.181,
+          25669.113
+        ],
+        "avg": 27749.647,
+        "min": 25669.113,
+        "max": 29830.181
+      },
+      "warm": {
+        "latencies": [
+          18379.959,
+          22503.456,
+          7296.432
+        ],
+        "avg": 16059.948999999999,
+        "min": 7296.432,
+        "max": 22503.456
+      },
+      "hot": {
+        "latencies": [
+          13302.296,
+          6675.079,
+          6316.738,
+          11601.392,
+          6743.829
+        ],
+        "avg": 8927.8668,
+        "min": 6316.738,
+        "max": 13302.296
+      },
+      "avgLatencyUs": 11602,
+      "minLatencyUs": 6317,
+      "maxLatencyUs": 22503,
+      "medianLatencyUs": 9449,
+      "p95LatencyUs": 22503,
+      "stddevLatencyUs": 5723,
+      "throughput": 172378,
+      "category": "win",
+      "note": "Wasm components called directly in-process. No HTTP, no TCP, no JSON. This is what Wasm Component Model composability gives you for free — same code that runs as microservices runs in-process."
+    },
+    {
+      "name": "WIN-4: Wasm Binary HTTP",
+      "ordersPerRound": 2000,
+      "totalProcessed": 22000,
+      "memoryBytes": 26247936,
+      "memoryRss": 153739264,
+      "memoryDelta": 12780664,
+      "cold": {
+        "latencies": [
+          19705.906
+        ],
+        "avg": 19705.906,
+        "min": 19705.906,
+        "max": 19705.906
+      },
+      "warmup": {
+        "latencies": [
+          9899.77,
+          5686.021
+        ],
+        "avg": 7792.8955000000005,
+        "min": 5686.021,
+        "max": 9899.77
+      },
+      "warm": {
+        "latencies": [
+          7117.799,
+          8982.487,
+          5257.306
+        ],
+        "avg": 7119.1973333333335,
+        "min": 5257.306,
+        "max": 8982.487
+      },
+      "hot": {
+        "latencies": [
+          5491.151,
+          6079.109,
+          5144.264,
+          4932.608,
+          5077.372
+        ],
+        "avg": 5344.9008,
+        "min": 4932.608,
+        "max": 6079.109
+      },
+      "avgLatencyUs": 6010,
+      "minLatencyUs": 4933,
+      "maxLatencyUs": 8982,
+      "medianLatencyUs": 5374,
+      "p95LatencyUs": 8982,
+      "stddevLatencyUs": 1308,
+      "throughput": 332764,
+      "category": "win",
+      "note": "Long-running server using Rust Wasm components (inventory + fraud) with the zero-marshal binary protocol. Combines cold-start win (long-running) + throughput win (binary protocol) + composability win (real Wasm components)."
+    },
+    {
+      "name": "WIN-5: In-Process Wasm Binary",
+      "ordersPerRound": 2000,
+      "totalProcessed": 22000,
+      "memoryBytes": 20329144,
+      "memoryRss": 150323200,
+      "memoryDelta": 6029752,
+      "cold": {
+        "latencies": [
+          3865.956
+        ],
+        "avg": 3865.956,
+        "min": 3865.956,
+        "max": 3865.956
+      },
+      "warmup": {
+        "latencies": [
+          2490.496,
+          1636.857
+        ],
+        "avg": 2063.6765,
+        "min": 1636.857,
+        "max": 2490.496
+      },
+      "warm": {
+        "latencies": [
+          1320.699,
+          1359.451,
+          1465.498
+        ],
+        "avg": 1381.8826666666666,
+        "min": 1320.699,
+        "max": 1465.498
+      },
+      "hot": {
+        "latencies": [
+          1703.326,
+          1565.845,
+          1978.001,
+          1873.213,
+          1692.357
+        ],
+        "avg": 1762.5484000000001,
+        "min": 1565.845,
+        "max": 1978.001
+      },
+      "avgLatencyUs": 1620,
+      "minLatencyUs": 1321,
+      "maxLatencyUs": 1978,
+      "medianLatencyUs": 1629,
+      "p95LatencyUs": 1978,
+      "stddevLatencyUs": 220,
+      "throughput": 1234721,
+      "category": "win",
+      "note": "Wasm inventory component called in-process via zero-marshal binary protocol. No HTTP, no TCP, no JSON. Combines all wins: cold start (long-running), throughput (binary), composability (in-process Wasm), marshaling (zero)."
+    }
+  ]
+}

@@ -27,3 +27,19 @@ Thumbs.db
 optimizations/cold-start/*.cwasm
 optimizations/cold-start/*.wizer.wasm
 optimizations/cold-start/*.log
+
+# Generated wasm artifacts (large, regeneratable)
+*.wizer.wasm
+*.wizer.component.wasm
+*.cwasm
+poly-erp-composed-rust-fraud.wasm
+poly-erp-composed.wizer.wasm
+inventory.recomposed.wasm
+
+# Generated transpiled bindings (regeneratable from .wasm via jco transpile)
+benchmarks/wasm-bindings/inventory-new/
+benchmarks/wasm-bindings/fraud-new/
+benchmarks/wasm-bindings/fraud-rust/
+
+# Temp config
+compose-rust.json
