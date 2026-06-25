@@ -1,0 +1,87 @@
+{
+  "timestamp": "2026-06-25T02:14:43.622Z",
+  "config": {
+    "ordersPerRound": 2000,
+    "rounds": 3,
+    "megaBatch": 10000
+  },
+  "results": [
+    {
+      "name": "Wasm Component",
+      "avgLatencyUs": 1275486,
+      "minLatencyUs": 0,
+      "maxLatencyUs": 0,
+      "throughput": 24304,
+      "memoryBytes": 300000,
+      "memoryDelta": 0,
+      "totalOrders": 31000,
+      "isNetworkless": true
+    },
+    {
+      "name": "FFI (C-Boundary)",
+      "avgLatencyUs": 6179,
+      "minLatencyUs": 0,
+      "maxLatencyUs": 0,
+      "throughput": 323660,
+      "memoryBytes": 12085848,
+      "memoryDelta": 3227720,
+      "totalProcessed": 6000,
+      "isNetworkless": true
+    },
+    {
+      "name": "Shared Memory",
+      "avgLatencyUs": 6096,
+      "minLatencyUs": 0,
+      "maxLatencyUs": 0,
+      "throughput": 328064,
+      "memoryBytes": 9788000,
+      "memoryDelta": 2304192,
+      "totalProcessed": 6000,
+      "isNetworkless": true
+    },
+    {
+      "name": "Unix Socket",
+      "avgLatencyUs": 14374,
+      "minLatencyUs": 7711,
+      "maxLatencyUs": 18768,
+      "throughput": 139144,
+      "memoryBytes": 12943320,
+      "memoryDelta": 3032680,
+      "totalProcessed": 6000,
+      "isNetworkless": true
+    },
+    {
+      "name": "REST (HTTP/1.1)",
+      "avgLatencyUs": 16002,
+      "minLatencyUs": 5611,
+      "maxLatencyUs": 30702,
+      "throughput": 124984,
+      "memoryBytes": 12066856,
+      "memoryDelta": 949616,
+      "totalProcessed": 6000,
+      "isNetworkless": false
+    },
+    {
+      "name": "gRPC (HTTP/2)",
+      "avgLatencyUs": 30059,
+      "minLatencyUs": 10359,
+      "maxLatencyUs": 64122,
+      "throughput": 66535,
+      "memoryBytes": 20274400,
+      "memoryDelta": 2210160,
+      "totalProcessed": 6000,
+      "isNetworkless": false
+    },
+    {
+      "name": "JSON-RPC (TCP)",
+      "avgLatencyUs": 10463,
+      "minLatencyUs": 7014,
+      "maxLatencyUs": 13615,
+      "throughput": 191157,
+      "memoryBytes": 17606248,
+      "memoryDelta": 2776496,
+      "totalProcessed": 6000,
+      "isNetworkless": false
+    }
+  ]
+}

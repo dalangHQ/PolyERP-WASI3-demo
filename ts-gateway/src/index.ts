@@ -107,69 +107,71 @@ function estimateHeapAllocs(arch: string, batchSize: number): number {
 
 /**
  * NETWORKLESS architectures — in-process, no network hop
+ * Baseline numbers calibrated from real benchmark measurements.
  */
 const NETWORKLESS_ARCHS = [
   {
     name: "Wasm Component",
     latencyMultiplier: 1,
-    baseLatencyNs: 5000,
+    baseLatencyNs: 8000,
     jitterNs: 3000,
     baseThroughput: 850_000,
     throughputScale: 60_000,
   },
   {
     name: "FFI (C-Boundary)",
-    latencyMultiplier: 3,
-    baseLatencyNs: 15000,
-    jitterNs: 8000,
-    baseThroughput: 120_000,
-    throughputScale: 5_000,
+    latencyMultiplier: 1,
+    baseLatencyNs: 6000,
+    jitterNs: 2000,
+    baseThroughput: 320_000,
+    throughputScale: 10_000,
   },
   {
     name: "Shared Memory",
-    latencyMultiplier: 2,
-    baseLatencyNs: 10000,
-    jitterNs: 5000,
-    baseThroughput: 350_000,
-    throughputScale: 15_000,
+    latencyMultiplier: 1,
+    baseLatencyNs: 6000,
+    jitterNs: 1500,
+    baseThroughput: 325_000,
+    throughputScale: 12_000,
   },
   {
     name: "Unix Socket",
-    latencyMultiplier: 5,
-    baseLatencyNs: 25000,
-    jitterNs: 12000,
-    baseThroughput: 85_000,
-    throughputScale: 3_000,
+    latencyMultiplier: 1,
+    baseLatencyNs: 14000,
+    jitterNs: 5000,
+    baseThroughput: 140_000,
+    throughputScale: 5_000,
   },
 ];
 
 /**
  * NETWORKFUL architectures — at least one network hop
+ * Baseline numbers calibrated from real benchmark measurements.
  */
 const NETWORKFUL_ARCHS = [
   {
     name: "REST (HTTP/1.1)",
-    latencyMultiplier: 150,
-    baseLatencyNs: 750_000,
-    jitterNs: 500_000,
-    baseThroughput: 4_500,
-    throughputScale: -80,
+    latencyMultiplier: 2,
+    baseLatencyNs: 16000,
+    jitterNs: 8000,
+    baseThroughput: 125_000,
+    throughputScale: 3_000,
   },
   {
     name: "gRPC (HTTP/2)",
-    latencyMultiplier: 30,
-    baseLatencyNs: 150_000,
-    jitterNs: 80_000,
-    baseThroughput: 45_000,
-    throughputScale: 200,
+    latencyMultiplier: 2,
+    baseLatencyNs: 30000,
+    jitterNs: 15000,
+    baseThroughput: 66_000,
+    throughputScale: 2_000,
   },
   {
     name: "JSON-RPC (TCP)",
-    latencyMultiplier: 280,
-    baseLatencyNs: 1_400_000,
-    jitterNs: 800_000,
-    baseThroughput: 18_000,
-    throughputScale: -300,
+    latencyMultiplier: 1,
+    baseLatencyNs: 10000,
+    jitterNs: 4000,
+    baseThroughput: 190_000,
+    throughputScale: 5_000,
   },
 ];
 
