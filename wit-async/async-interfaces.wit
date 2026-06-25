@@ -1,0 +1,50 @@
+package demo:poly-erp@1.0.0;
+
+// WASI 0.3 Async interfaces - for standalone component builds
+// These cannot be composed with wac yet due to stream<T>/future<T> 
+// support being in progress in the composition tooling.
+// The sync interfaces in poly-erp.wit are used for the composed binary.
+
+interface types {
+    record order {
+        id: string,
+        item-id: string,
+        quantity: u32,
+        user-id: string,
+    }
+
+    record inventory-update {
+        item-id: string,
+        new-stock: u32,
+    }
+    
+    record telemetry {
+        architecture: string,
+        throughput-msg-sec: u32,
+        latency-ns: u64,
+        timestamp: u64,
+    }
+
+    record fraud-result {
+        order-id: string,
+        is-fraud: bool,
+    }
+}
+
+interface inventory-async {
+    use types.{order, inventory-update};
+    process-orders: async func(incoming: stream<order>) -> stream<inventory-update>;
+}
+
+interface fraud-detection-async {
+    use types.{order};
+    check-fraud: async func(txn: order) -> future<bool>;
+}
+
+world inventory-service-async {
+    export inventory-async;
+}
+
+world fraud-service-async {
+    export fraud-detection-async;
+}

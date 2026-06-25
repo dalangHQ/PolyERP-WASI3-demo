@@ -1,0 +1,97 @@
+package demo:poly-erp@1.0.0;
+
+// 1. Core Data Types
+interface types {
+    record order {
+        id: string,
+        item-id: string,
+        quantity: u32,
+        user-id: string,
+    }
+
+    record inventory-update {
+        item-id: string,
+        new-stock: u32,
+    }
+    
+    record telemetry {
+        architecture: string,
+        throughput-msg-sec: u32,
+        latency-ns: u64,
+        timestamp: u64,
+        memory-bytes: u64,
+        heap-allocs: u32,
+        is-networkless: bool,
+        category: string,
+        cold-latency-ns: u64,
+        warm-latency-ns: u64,
+        hot-latency-ns: u64,
+    }
+
+    record fraud-result {
+        order-id: string,
+        is-fraud: bool,
+    }
+
+    record memory-stats {
+        linear-memory-bytes: u64,
+        total-orders-tracked: u32,
+        db-entries: u32,
+        peak-batch-size: u32,
+    }
+}
+
+// 2. Inventory interface (sync batch - used by gateway for composition)
+interface inventory {
+    use types.{order, inventory-update, memory-stats};
+    process-orders-batch: func(orders: list<order>) -> list<inventory-update>;
+    get-stock: func(item-ids: list<string>) -> list<u32>;
+    get-memory-stats: func() -> memory-stats;
+    // Zero-marshal binary protocol: accepts a flat binary buffer
+    // (4-byte count + N*16-byte orders) and returns a flat binary
+    // result (4-byte count + N*8-byte results).
+    // Each order is 16 bytes: [id_hash u32][item_id_hash u32][quantity u32][user_id_hash u32]
+    // Each result is 8 bytes: [item_index u32][new_stock u32]
+    // This eliminates the per-string marshal tax.
+    process-binary-batch: func(input: list<u8>) -> list<u8>;
+}
+
+// 3. Fraud detection (sync batch - used by gateway for composition)
+interface fraud-detection {
+    use types.{order, fraud-result};
+    check-fraud-batch: func(orders: list<order>) -> list<fraud-result>;
+}
+
+// 4. Gateway interface
+interface gateway-api {
+    use types.{telemetry, order, inventory-update, fraud-result, memory-stats};
+    process-pipeline: func(orders: list<order>) -> list<inventory-update>;
+    get-telemetry: func() -> list<telemetry>;
+    get-stock: func(item-ids: list<string>) -> list<u32>;
+    get-memory-bench: func() -> memory-stats;
+}
+
+// === Async interfaces (standalone WASI 0.3 components) ===
+// These are defined separately for components that can use stream<T>/future<T> natively.
+// See wit/async-interfaces.wit for the full async WIT definitions.
+
+// 5. Component Worlds
+
+// Rust world - exports inventory (sync) for composition
+world inventory-service {
+    export inventory;
+}
+
+// Python world - exports fraud-detection (sync) for composition
+world fraud-service {
+    export fraud-detection;
+}
+
+// Gateway world - imports sync interfaces, exports gateway-api + wasi:cli/run
+// The wasi:cli/run export makes this a runnable command that `wasmtime run` can execute.
+world gateway-service {
+    import inventory;
+    import fraud-detection;
+    export gateway-api;
+    export wasi:cli/run@0.2.3;
+}

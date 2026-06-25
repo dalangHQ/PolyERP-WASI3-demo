@@ -1,0 +1,7 @@
+[target.wasm32-wasip3]
+rustflags = [
+    "-L", "/home/z/wasi-sdk/share/wasi-sysroot/lib/wasm32-wasip2",
+]
+
+[target.wasm32-wasip3.dependencies]
+# Link against wasip2 libc as wasip3 sysroot is not yet available

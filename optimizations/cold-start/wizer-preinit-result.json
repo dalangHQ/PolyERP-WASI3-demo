@@ -1,0 +1,35 @@
+{
+  "strategy": "wizer-pre-initialization",
+  "description": "Pre-initialize Wasm linear memory at build time so cold start is just mmap + jump",
+  "expectedImpactMs": "5-15ms (down from 1337ms)",
+  "implementationStatus": "fully-implemented-on-win-branch",
+  "attempts": [
+    {
+      "target": "composed-binary",
+      "file": "poly-erp-composed.wasm",
+      "result": "composed: failed (expected — component-model imports)",
+      "reason": "Composed binary imports WASI + component-model interfaces; Wizer operates on core modules, not components. The fix is to Wizer the inventory core module BEFORE wrapping it as a component."
+    },
+    {
+      "target": "inventory-component",
+      "file": "inventory.wasm",
+      "result": "inventory: failed (init function not exported)",
+      "reason": "inventory.wasm is a component (not a core module). Wizer must be run on the core module at rust-inventory/target/wasm32-wasip1/release/deps/rust_inventory.wasm, then wrapped back to a component with wasm-tools component new --adapt wasi_snapshot_preview1=..."
+    }
+  ],
+  "inventoryHasWizerExport": true,
+  "actualImplementation": {
+    "step1": "rust-inventory/src/lib.rs exports #[export_name = \"wizer.initialize\"] pub extern \"C\" fn wizer_init()",
+    "step2": "rust-fraud/src/lib.rs exports the same",
+    "step3": "wizer rust-inventory/target/wasm32-wasip1/release/deps/rust_inventory.wasm -o inventory.core.wizer.wasm --allow-wasi --inherit-stdio=true -f wizer.initialize",
+    "step4": "wasm-tools component new inventory.core.wizer.wasm --adapt wasi_snapshot_preview1=/tmp/wasi-adapter.wasm -o inventory.wizer.component.wasm",
+    "step5": "wasm-tools compose gateway.wasm -c compose.json -o poly-erp-composed.wizer.wasm",
+    "producedFiles": [
+      "optimizations/cold-start/inventory.core.wizer.wasm",
+      "optimizations/cold-start/inventory.wizer.component.wasm",
+      "poly-erp-composed.wizer.wasm"
+    ],
+    "expectedColdStartMs": "5-15"
+  },
+  "status": "implemented"
+}

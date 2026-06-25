@@ -1,0 +1,45 @@
+syntax = "proto3";
+
+package polayerp;
+
+message Order {
+  string id = 1;
+  string item_id = 2;
+  uint32 quantity = 3;
+  string user_id = 4;
+}
+
+message InventoryUpdate {
+  string item_id = 1;
+  uint32 new_stock = 2;
+}
+
+message FraudResult {
+  string order_id = 1;
+  bool is_fraud = 2;
+}
+
+message PipelineRequest {
+  repeated Order orders = 1;
+}
+
+message PipelineResponse {
+  repeated InventoryUpdate updates = 1;
+  uint32 fraud_count = 2;
+}
+
+message StockRequest {
+  repeated string ids = 1;
+}
+
+message StockResponse {
+  repeated uint32 stock = 1;
+}
+
+message Empty {}
+
+service PolyERP {
+  rpc ProcessPipeline(PipelineRequest) returns (PipelineResponse);
+  rpc GetStock(StockRequest) returns (StockResponse);
+  rpc Health(Empty) returns (Empty);
+}
