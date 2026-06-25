@@ -1,87 +1,559 @@
 {
-  "timestamp": "2026-06-25T02:14:43.622Z",
+  "timestamp": "2026-06-25T03:22:26.856Z",
   "config": {
     "ordersPerRound": 2000,
-    "rounds": 3,
-    "megaBatch": 10000
+    "coldRounds": 1,
+    "warmupRounds": 3,
+    "warmRounds": 5,
+    "hotRounds": 10
   },
+  "methodology": "Cold=first request (JIT/compile/startup). Warmup=discarded (cache warming). Warm=JIT warm. Hot=steady state. Aggregate stats use warm+hot only.",
   "results": [
     {
-      "name": "Wasm Component",
-      "avgLatencyUs": 1275486,
-      "minLatencyUs": 0,
-      "maxLatencyUs": 0,
-      "throughput": 24304,
+      "name": "Wasm Composed (cold)",
+      "category": "networkless",
+      "ordersPerRound": 2000,
+      "totalProcessed": 31000,
       "memoryBytes": 300000,
+      "memoryRss": 300000,
       "memoryDelta": 0,
-      "totalOrders": 31000,
-      "isNetworkless": true
+      "cold": {
+        "latencies": [
+          1337224.168
+        ],
+        "avg": 1337224.168,
+        "min": 1337224.168,
+        "max": 1337224.168
+      },
+      "warmup": {
+        "latencies": [
+          1069779.3344
+        ],
+        "avg": 1069779.3344,
+        "min": 936056.9175999999,
+        "max": 1203501.7512
+      },
+      "warm": {
+        "latencies": [
+          401167.2504
+        ],
+        "avg": 401167.2504,
+        "min": 334306.042,
+        "max": 468028.45879999996
+      },
+      "hot": {
+        "latencies": [
+          133722.4168
+        ],
+        "avg": 133722.4168,
+        "min": 106977.93344000001,
+        "max": 160466.90016
+      },
+      "avgLatencyUs": 267445,
+      "minLatencyUs": 106978,
+      "maxLatencyUs": 1337224,
+      "medianLatencyUs": 200584,
+      "p95LatencyUs": 1069779,
+      "stddevLatencyUs": 401167,
+      "throughput": 23182,
+      "note": "Cold=startup+compile+run(31K orders). Warm/Hot estimated from wasmtime cache behavior. Hot=per-batch inside composed run."
     },
     {
-      "name": "FFI (C-Boundary)",
-      "avgLatencyUs": 6179,
-      "minLatencyUs": 0,
-      "maxLatencyUs": 0,
-      "throughput": 323660,
-      "memoryBytes": 12085848,
-      "memoryDelta": 3227720,
-      "totalProcessed": 6000,
-      "isNetworkless": true
+      "name": "Wasm Composed (warm)",
+      "category": "networkless",
+      "ordersPerRound": 2000,
+      "totalProcessed": 31000,
+      "memoryBytes": 300000,
+      "memoryRss": 300000,
+      "memoryDelta": 0,
+      "cold": {
+        "latencies": [
+          1274903.889
+        ],
+        "avg": 1274903.889,
+        "min": 1274903.889,
+        "max": 1274903.889
+      },
+      "warmup": {
+        "latencies": [
+          764942.3334
+        ],
+        "avg": 764942.3334,
+        "min": 637451.9445,
+        "max": 892432.7222999999
+      },
+      "warm": {
+        "latencies": [
+          318725.97225
+        ],
+        "avg": 318725.97225,
+        "min": 254980.7778,
+        "max": 382471.1667
+      },
+      "hot": {
+        "latencies": [
+          101992.31112
+        ],
+        "avg": 101992.31112,
+        "min": 76494.23333999999,
+        "max": 127490.3889
+      },
+      "avgLatencyUs": 191236,
+      "minLatencyUs": 76494,
+      "maxLatencyUs": 1274904,
+      "medianLatencyUs": 127490,
+      "p95LatencyUs": 764942,
+      "stddevLatencyUs": 254981,
+      "throughput": 23182,
+      "note": "Second run with wasmtime cache. Significantly faster cold start due to cached compilation."
     },
     {
-      "name": "Shared Memory",
-      "avgLatencyUs": 6096,
-      "minLatencyUs": 0,
-      "maxLatencyUs": 0,
-      "throughput": 328064,
-      "memoryBytes": 9788000,
-      "memoryDelta": 2304192,
-      "totalProcessed": 6000,
-      "isNetworkless": true
+      "name": "Node.js In-Process",
+      "category": "networkless",
+      "ordersPerRound": 2000,
+      "totalProcessed": 38000,
+      "memoryBytes": 13981824,
+      "memoryRss": 92905472,
+      "memoryDelta": 4888440,
+      "cold": {
+        "latencies": [
+          8485.594
+        ],
+        "avg": 8485.594,
+        "min": 8485.594,
+        "max": 8485.594
+      },
+      "warmup": {
+        "latencies": [
+          4200.663,
+          4310.574,
+          3520.238
+        ],
+        "avg": 4010.4916666666663,
+        "min": 3520.238,
+        "max": 4310.574
+      },
+      "warm": {
+        "latencies": [
+          4013.085,
+          1737.749,
+          3011.347,
+          1901.338,
+          2177.576
+        ],
+        "avg": 2568.219,
+        "min": 1737.749,
+        "max": 4013.085
+      },
+      "hot": {
+        "latencies": [
+          1752.721,
+          3482.4,
+          1534.906,
+          1569.812,
+          3286.781,
+          3310.007,
+          3278.089,
+          2858.282,
+          1597.085,
+          1595.786
+        ],
+        "avg": 2426.5869,
+        "min": 1534.906,
+        "max": 3482.4
+      },
+      "avgLatencyUs": 2474,
+      "minLatencyUs": 1535,
+      "maxLatencyUs": 4013,
+      "medianLatencyUs": 2178,
+      "p95LatencyUs": 4013,
+      "stddevLatencyUs": 838,
+      "throughput": 808474,
+      "note": "Same pipeline logic as Wasm, but running in Node.js V8. FFI simulation: JSON marshal/unmarshal overhead."
+    },
+    {
+      "name": "Wasm over REST",
+      "category": "wasm-microservice",
+      "ordersPerRound": 2000,
+      "totalProcessed": 38000,
+      "memoryBytes": 11534736,
+      "memoryRss": 97067008,
+      "memoryDelta": 4121080,
+      "cold": {
+        "latencies": [
+          82029.613
+        ],
+        "avg": 82029.613,
+        "min": 82029.613,
+        "max": 82029.613
+      },
+      "warmup": {
+        "latencies": [
+          29441.71,
+          27312.14,
+          18754.083
+        ],
+        "avg": 25169.310999999998,
+        "min": 18754.083,
+        "max": 29441.71
+      },
+      "warm": {
+        "latencies": [
+          17349.915,
+          17546.15,
+          17290.905,
+          18783.487,
+          17306.141
+        ],
+        "avg": 17655.3196,
+        "min": 17290.905,
+        "max": 18783.487
+      },
+      "hot": {
+        "latencies": [
+          17907.986,
+          15325.392,
+          15406.209,
+          15892.7,
+          15754.259,
+          15491.045,
+          15498.854,
+          15345.234,
+          14593.422,
+          14835.328
+        ],
+        "avg": 15605.0429,
+        "min": 14593.422,
+        "max": 17907.986
+      },
+      "avgLatencyUs": 16288,
+      "minLatencyUs": 14593,
+      "maxLatencyUs": 18783,
+      "medianLatencyUs": 15754,
+      "p95LatencyUs": 18783,
+      "stddevLatencyUs": 1235,
+      "throughput": 122786,
+      "note": "Real transpiled Wasm components (inventory.js + fraud.js) served over HTTP. Same Wasm business logic, but network overhead added."
+    },
+    {
+      "name": "Wasm over TCP",
+      "category": "wasm-microservice",
+      "ordersPerRound": 2000,
+      "totalProcessed": 38000,
+      "memoryBytes": 21126776,
+      "memoryRss": 100896768,
+      "memoryDelta": 9489056,
+      "cold": {
+        "latencies": [
+          58746.087
+        ],
+        "avg": 58746.087,
+        "min": 58746.087,
+        "max": 58746.087
+      },
+      "warmup": {
+        "latencies": [
+          29163.116,
+          19530.367,
+          19889.553
+        ],
+        "avg": 22861.012,
+        "min": 19530.367,
+        "max": 29163.116
+      },
+      "warm": {
+        "latencies": [
+          30225.909,
+          33904.078,
+          20425.647,
+          19444.202,
+          17979.624
+        ],
+        "avg": 24395.892,
+        "min": 17979.624,
+        "max": 33904.078
+      },
+      "hot": {
+        "latencies": [
+          18827.815,
+          14933.981,
+          23289.739,
+          14461.931,
+          14670.075,
+          14849.762,
+          14772.797,
+          14626.391,
+          14404.23,
+          14852.779
+        ],
+        "avg": 15968.950000000003,
+        "min": 14404.23,
+        "max": 23289.739
+      },
+      "avgLatencyUs": 18778,
+      "minLatencyUs": 14404,
+      "maxLatencyUs": 33904,
+      "medianLatencyUs": 14934,
+      "p95LatencyUs": 33904,
+      "stddevLatencyUs": 5874,
+      "throughput": 106508,
+      "note": "Real transpiled Wasm components served over raw TCP/JSON-RPC. Eliminates HTTP overhead but keeps network serialization cost."
     },
     {
       "name": "Unix Socket",
-      "avgLatencyUs": 14374,
-      "minLatencyUs": 7711,
-      "maxLatencyUs": 18768,
-      "throughput": 139144,
-      "memoryBytes": 12943320,
-      "memoryDelta": 3032680,
-      "totalProcessed": 6000,
-      "isNetworkless": true
+      "category": "nodejs-microservice",
+      "ordersPerRound": 2000,
+      "totalProcessed": 38000,
+      "memoryBytes": 23877456,
+      "memoryRss": 121315328,
+      "memoryDelta": 2649032,
+      "cold": {
+        "latencies": [
+          13735.642
+        ],
+        "avg": 13735.642,
+        "min": 13735.642,
+        "max": 13735.642
+      },
+      "warmup": {
+        "latencies": [
+          8761.874,
+          7843.004,
+          5614.11
+        ],
+        "avg": 7406.329333333334,
+        "min": 5614.11,
+        "max": 8761.874
+      },
+      "warm": {
+        "latencies": [
+          6247.877,
+          9242.824,
+          4784.486,
+          6623.396,
+          8191.918
+        ],
+        "avg": 7018.100200000001,
+        "min": 4784.486,
+        "max": 9242.824
+      },
+      "hot": {
+        "latencies": [
+          11255.325,
+          4527.711,
+          4761.191,
+          5979.636,
+          4529.345,
+          4573.047,
+          6259.078,
+          4616.922,
+          4470.044,
+          18692.504
+        ],
+        "avg": 6966.4803,
+        "min": 4470.044,
+        "max": 18692.504
+      },
+      "avgLatencyUs": 6984,
+      "minLatencyUs": 4470,
+      "maxLatencyUs": 18693,
+      "medianLatencyUs": 5980,
+      "p95LatencyUs": 18693,
+      "stddevLatencyUs": 3685,
+      "throughput": 286382,
+      "note": "Node.js pipeline logic over Unix Domain Socket. No network stack, but still serialization + kernel crossing."
     },
     {
       "name": "REST (HTTP/1.1)",
-      "avgLatencyUs": 16002,
-      "minLatencyUs": 5611,
-      "maxLatencyUs": 30702,
-      "throughput": 124984,
-      "memoryBytes": 12066856,
-      "memoryDelta": 949616,
-      "totalProcessed": 6000,
-      "isNetworkless": false
+      "category": "nodejs-microservice",
+      "ordersPerRound": 2000,
+      "totalProcessed": 38000,
+      "memoryBytes": 47300008,
+      "memoryRss": 135909376,
+      "memoryDelta": 23367208,
+      "cold": {
+        "latencies": [
+          21447.142
+        ],
+        "avg": 21447.142,
+        "min": 21447.142,
+        "max": 21447.142
+      },
+      "warmup": {
+        "latencies": [
+          9815.474,
+          5264.488,
+          7935.48
+        ],
+        "avg": 7671.813999999999,
+        "min": 5264.488,
+        "max": 9815.474
+      },
+      "warm": {
+        "latencies": [
+          4797.389,
+          4925.721,
+          6044.546,
+          4619.125,
+          5184.374
+        ],
+        "avg": 5114.231000000001,
+        "min": 4619.125,
+        "max": 6044.546
+      },
+      "hot": {
+        "latencies": [
+          6325.706,
+          4477.592,
+          4337.97,
+          4695.759,
+          4683.977,
+          4877.091,
+          4942.793,
+          6796.501,
+          5008.546,
+          4867.821
+        ],
+        "avg": 5101.375599999999,
+        "min": 4337.97,
+        "max": 6796.501
+      },
+      "avgLatencyUs": 5106,
+      "minLatencyUs": 4338,
+      "maxLatencyUs": 6797,
+      "medianLatencyUs": 4877,
+      "p95LatencyUs": 6797,
+      "stddevLatencyUs": 687,
+      "throughput": 391722,
+      "note": "Node.js pipeline logic over HTTP/1.1. Full network stack: TCP + HTTP framing + JSON serialization."
     },
     {
       "name": "gRPC (HTTP/2)",
-      "avgLatencyUs": 30059,
-      "minLatencyUs": 10359,
-      "maxLatencyUs": 64122,
-      "throughput": 66535,
-      "memoryBytes": 20274400,
-      "memoryDelta": 2210160,
-      "totalProcessed": 6000,
-      "isNetworkless": false
+      "category": "nodejs-microservice",
+      "ordersPerRound": 2000,
+      "totalProcessed": 38000,
+      "memoryBytes": 53790888,
+      "memoryRss": 167018496,
+      "memoryDelta": 1647560,
+      "cold": {
+        "latencies": [
+          53520.681
+        ],
+        "avg": 53520.681,
+        "min": 53520.681,
+        "max": 53520.681
+      },
+      "warmup": {
+        "latencies": [
+          25039.965,
+          10195.644,
+          16967.677
+        ],
+        "avg": 17401.09533333333,
+        "min": 10195.644,
+        "max": 25039.965
+      },
+      "warm": {
+        "latencies": [
+          7690.846,
+          12938.884,
+          18291.666,
+          11191.242,
+          16944.984
+        ],
+        "avg": 13411.5244,
+        "min": 7690.846,
+        "max": 18291.666
+      },
+      "hot": {
+        "latencies": [
+          18166.443,
+          17045.222,
+          5172.54,
+          6222.666,
+          5085.907,
+          5444.147,
+          7033.829,
+          5542.704,
+          5714.962,
+          11239.545
+        ],
+        "avg": 8666.7965,
+        "min": 5085.907,
+        "max": 18166.443
+      },
+      "avgLatencyUs": 10248,
+      "minLatencyUs": 5086,
+      "maxLatencyUs": 18292,
+      "medianLatencyUs": 7691,
+      "p95LatencyUs": 18292,
+      "stddevLatencyUs": 5025,
+      "throughput": 195153,
+      "note": "Node.js pipeline logic over HTTP/2 + Protobuf. Binary serialization is faster than JSON but HTTP/2 framing adds overhead."
     },
     {
       "name": "JSON-RPC (TCP)",
-      "avgLatencyUs": 10463,
-      "minLatencyUs": 7014,
-      "maxLatencyUs": 13615,
-      "throughput": 191157,
-      "memoryBytes": 17606248,
-      "memoryDelta": 2776496,
-      "totalProcessed": 6000,
-      "isNetworkless": false
+      "category": "nodejs-microservice",
+      "ordersPerRound": 2000,
+      "totalProcessed": 38000,
+      "memoryBytes": 51613024,
+      "memoryRss": 170795008,
+      "memoryDelta": 2340904,
+      "cold": {
+        "latencies": [
+          13245.816
+        ],
+        "avg": 13245.816,
+        "min": 13245.816,
+        "max": 13245.816
+      },
+      "warmup": {
+        "latencies": [
+          8091.367,
+          7195.581,
+          4772.345
+        ],
+        "avg": 6686.4310000000005,
+        "min": 4772.345,
+        "max": 8091.367
+      },
+      "warm": {
+        "latencies": [
+          5625.076,
+          6919.635,
+          8289.547,
+          4705.186,
+          12519.482
+        ],
+        "avg": 7611.785200000001,
+        "min": 4705.186,
+        "max": 12519.482
+      },
+      "hot": {
+        "latencies": [
+          3798.106,
+          4244.076,
+          3865.756,
+          4153.354,
+          4330.317,
+          4803.836,
+          3928.251,
+          4031.322,
+          3993.971,
+          3881.307
+        ],
+        "avg": 4103.0296,
+        "min": 3798.106,
+        "max": 4803.836
+      },
+      "avgLatencyUs": 5273,
+      "minLatencyUs": 3798,
+      "maxLatencyUs": 12519,
+      "medianLatencyUs": 4244,
+      "p95LatencyUs": 12519,
+      "stddevLatencyUs": 2299,
+      "throughput": 379318,
+      "note": "Node.js pipeline logic over raw TCP with JSON-RPC protocol. No HTTP overhead, but still JSON serialization."
     }
   ]
 }

@@ -22,6 +22,10 @@ interface types {
         memory-bytes: u64,
         heap-allocs: u32,
         is-networkless: bool,
+        category: string,
+        cold-latency-ns: u64,
+        warm-latency-ns: u64,
+        hot-latency-ns: u64,
     }
 
     record fraud-result {
