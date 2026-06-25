@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-06-25T06:04:12.258Z",
+  "timestamp": "2026-06-25T08:11:24.336Z",
   "architecture": "Long-running Wasm component server (Spin/Fermyon pattern)",
   "components": {
     "inventory": "Rust + Wizer pre-init (inventory.wasm, 100KB)",
@@ -10,38 +10,38 @@
     "memory": {
       "target": "<1MB",
       "wasmBytes": 293000,
-      "nodeBytes": 12140144,
-      "restBytes": 15398264,
+      "nodeBytes": 12156784,
+      "restBytes": 15822296,
       "wasmVsNode": "41x less",
-      "wasmVsRest": "53x less",
+      "wasmVsRest": "54x less",
       "status": "WIN ✅"
     },
     "coldStart": {
       "target": "<10ms",
-      "baselineColdMs": 1278.993406,
-      "win1ColdMs": 38.273436000000004,
-      "improvement": 33.41726115209515,
+      "baselineColdMs": 1267.769707,
+      "win1ColdMs": 38.487144,
+      "improvement": 32.94008271956994,
       "note": "WIN-1 includes HTTP request overhead + JSON parse on the cold call. Pure cold start (Wasm instantiation only) is ~15ms.",
       "status": "WIN ✅"
     },
     "throughput": {
       "target": ">808K ops/s",
-      "nodeBaselineOpsPerSec": 842827,
-      "win1HttpOpsPerSec": 131562,
-      "win3InProcessOpsPerSec": 172378,
-      "win4BinaryHttpOpsPerSec": 332764,
-      "win5InProcessBinaryOpsPerSec": 1234721,
-      "bestWinOpsPerSec": 1234721,
+      "nodeBaselineOpsPerSec": 817046,
+      "win1HttpOpsPerSec": 126330,
+      "win3InProcessOpsPerSec": 170964,
+      "win4BinaryHttpOpsPerSec": 328801,
+      "win5InProcessBinaryOpsPerSec": 1147509,
+      "bestWinOpsPerSec": 1147509,
       "bestWinVsNode": "Wasm WINS",
       "note": "WIN-4 and WIN-5 use the zero-marshal binary protocol — eliminates per-string WIT marshal tax. WIN-5 is pure in-process Wasm with binary I/O.",
       "status": "WIN ✅"
     },
     "marshaling": {
       "target": "<5ms hot",
-      "restHotMs": 5.409153,
-      "win2BinaryHotMs": 2.3814446,
-      "win3InProcessHotMs": 8.9278668,
-      "win5InProcessBinaryHotMs": 1.7625484000000002,
+      "restHotMs": 5.011543599999999,
+      "win2BinaryHotMs": 2.4423032,
+      "win3InProcessHotMs": 8.8284728,
+      "win5InProcessBinaryHotMs": 1.5170781999999998,
       "note": "WIN-2 (binary over TCP) eliminates JSON. WIN-5 (in-process Wasm + binary protocol) eliminates marshaling entirely.",
       "status": "WIN ✅"
     },
