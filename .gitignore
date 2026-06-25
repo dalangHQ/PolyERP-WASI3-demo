@@ -22,3 +22,8 @@ ts-gateway/*.wasm
 Thumbs.db
 
 # Lock files in component dirs are fine to keep
+
+# Optimization generated artifacts (large, regenerable)
+optimizations/cold-start/*.cwasm
+optimizations/cold-start/*.wizer.wasm
+optimizations/cold-start/*.log

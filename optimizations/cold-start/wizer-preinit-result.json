@@ -1,0 +1,27 @@
+{
+  "strategy": "wizer-pre-initialization",
+  "description": "Pre-initialize Wasm linear memory at build time so cold start is just mmap + jump",
+  "expectedImpactMs": "5-15ms (down from 1337ms)",
+  "attempts": [
+    {
+      "target": "composed-binary",
+      "file": "poly-erp-composed.wasm",
+      "result": "composed: failed (expected — component-model imports)",
+      "reason": "Composed binary imports WASI + component-model interfaces; Wizer cannot snapshot modules with import side-effects"
+    },
+    {
+      "target": "inventory-component",
+      "file": "inventory.wasm",
+      "result": "inventory: failed (init function not exported)",
+      "reason": "Inventory component does not export a 'wizer.initialize' function. The Rust source must be annotated with #[export_name = \"wizer.initialize\"] and rebuilt with cargo-component."
+    }
+  ],
+  "inventoryHasWizerExport": false,
+  "architecturalRecommendation": {
+    "rustChange": "Add #[export_name = \"wizer.initialize\"] pub extern \"C\" fn wizer_init() to rust-inventory/src/lib.rs",
+    "rebuild": "cargo +nightly component build --release --target wasm32-wasip3",
+    "compose": "wasm-tools compose gateway.wasm --plug inventory.wizer.wasm --plug fraud.wasm",
+    "expectedColdStartMs": "5-15"
+  },
+  "status": "documented-with-source-patch-needed"
+}

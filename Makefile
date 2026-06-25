@@ -1,4 +1,4 @@
-.PHONY: build build-rust build-python build-gateway build-frontend compose run dashboard clean
+.PHONY: build build-rust build-python build-gateway build-frontend compose run dashboard clean optimize optimize-benchmark
 
 ROOT_DIR := $(shell pwd)
 
@@ -39,3 +39,13 @@ clean:
 	rm -f inventory.wasm fraud.wasm gateway.wasm poly-erp-composed.wasm
 	cd rust-inventory && cargo clean
 	cd frontend && rm -rf dist node_modules
+
+# ═══ Optimization targets (win branch) ═══
+# Pre-compile Wasm to .cwasm, attempt Wizer pre-init, run full dynamic benchmark.
+# Produces benchmarks/optimized-results.json + benchmarks/optimization-summary.json.
+optimize:
+	./optimizations/run-all.sh --orders=2000
+
+# Just the benchmark (assumes .cwasm already built)
+optimize-benchmark:
+	node optimizations/optimized-benchmark.mjs --orders=2000

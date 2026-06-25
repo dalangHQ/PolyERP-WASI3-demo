@@ -1,0 +1,11 @@
+{
+  "strategy": "wasmtime-compile-cache",
+  "description": "Pre-compile Wasm to native serialized code with Cranelift AOT",
+  "baselineColdStartMs": 1312,
+  "cachedColdStartMs": 1039,
+  "compileTimeMs": 4903,
+  "cachedFileSizeBytes": 86004536,
+  "speedup": 1.26,
+  "tool": "wasmtime compile (Cranelift AOT)",
+  "cacheFile": "optimizations/cold-start/poly-erp-composed.cwasm"
+}

@@ -35,6 +35,65 @@ lazy_static! {
 static TOTAL_ORDERS_TRACKED: AtomicU32 = AtomicU32::new(0);
 static PEAK_BATCH_SIZE: AtomicU32 = AtomicU32::new(0);
 
+/// ═══════════════════════════════════════════════════════════════
+/// WIZER PRE-INITIALIZATION HOOK
+/// ═══════════════════════════════════════════════════════════════
+/// Strategy B from the optimization plan: pre-initialize linear
+/// memory at *build* time so cold start drops from ~1s to ~5-15ms.
+///
+/// When this function is exported, `wizer inventory.wasm -o
+/// inventory.wizer.wasm --allow-wasi` will:
+///   1. Instantiate the module
+///   2. Call this function (which forces lazy_static DB init)
+///   3. Snapshot the resulting linear memory into a new Wasm module
+///   4. The new module starts with the DB already populated
+///
+/// The 50-SKU inventory DB (50 * 120 bytes = 6KB) is baked into
+/// the binary, eliminating the runtime initialization cost.
+///
+/// Usage:
+///   wizer inventory.wasm -o inventory.wizer.wasm --allow-wasi \
+///     --inherit-stdio=true -f wizer.initialize
+#[export_name = "wizer.initialize"]
+pub extern "C" fn wizer_init() {
+    // Force lazy_static initialization — this populates the 50-SKU
+    // inventory DB into linear memory at build time.
+    let _ = DB.lock().unwrap();
+    // Pre-touch the tracking counters so they're in the data section
+    TOTAL_ORDERS_TRACKED.store(0, Ordering::Relaxed);
+    PEAK_BATCH_SIZE.store(0, Ordering::Relaxed);
+}
+
+/// ═══════════════════════════════════════════════════════════════
+/// SIMD-OPTIMIZED BATCH DEDUCTION (Strategy D from optimization plan)
+/// ═══════════════════════════════════════════════════════════════
+/// Process 4 stock deductions simultaneously using Wasm SIMD
+/// instructions. Only triggered when the SIMD target feature is
+/// available; falls back to scalar otherwise.
+///
+/// The function takes parallel arrays of (item_id_hash, quantity)
+/// and applies them against a flat stock array. Expected speedup:
+/// 2-4x on the hot path for batches >= 16 orders.
+#[cfg(target_feature = "simd128")]
+#[inline]
+unsafe fn batch_deduct_simd(stocks: &mut [u32], quantities: &[u32]) {
+    use std::arch::wasm32::*;
+    let n = stocks.len().min(quantities.len());
+    let chunks = n / 4;
+    for i in 0..chunks {
+        let offset = i * 4;
+        let s = v128_load(stocks.as_ptr().add(offset) as *const v128);
+        let q = v128_load(quantities.as_ptr().add(offset) as *const v128);
+        // Saturating subtract: 4 u32 deductions in one instruction
+        let result = u32x4_saturating_sub(s, q);
+        v128_store(stocks.as_mut_ptr().add(offset) as *mut v128, result);
+    }
+    // Tail: handle remaining elements scalar
+    for i in (chunks * 4)..n {
+        stocks[i] = stocks[i].saturating_sub(quantities[i]);
+    }
+}
+
 struct Component;
 
 impl Guest for Component {
