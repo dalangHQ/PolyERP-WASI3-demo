@@ -19,19 +19,30 @@ interface types {
         throughput-msg-sec: u32,
         latency-ns: u64,
         timestamp: u64,
+        memory-bytes: u64,
+        heap-allocs: u32,
+        is-networkless: bool,
     }
 
     record fraud-result {
         order-id: string,
         is-fraud: bool,
     }
+
+    record memory-stats {
+        linear-memory-bytes: u64,
+        total-orders-tracked: u32,
+        db-entries: u32,
+        peak-batch-size: u32,
+    }
 }
 
 // 2. Inventory interface (sync batch - used by gateway for composition)
 interface inventory {
-    use types.{order, inventory-update};
+    use types.{order, inventory-update, memory-stats};
     process-orders-batch: func(orders: list<order>) -> list<inventory-update>;
     get-stock: func(item-ids: list<string>) -> list<u32>;
+    get-memory-stats: func() -> memory-stats;
 }
 
 // 3. Fraud detection (sync batch - used by gateway for composition)
@@ -42,10 +53,11 @@ interface fraud-detection {
 
 // 4. Gateway interface
 interface gateway-api {
-    use types.{telemetry, order, inventory-update, fraud-result};
+    use types.{telemetry, order, inventory-update, fraud-result, memory-stats};
     process-pipeline: func(orders: list<order>) -> list<inventory-update>;
     get-telemetry: func() -> list<telemetry>;
     get-stock: func(item-ids: list<string>) -> list<u32>;
+    get-memory-bench: func() -> memory-stats;
 }
 
 // === Async interfaces (standalone WASI 0.3 components) ===
